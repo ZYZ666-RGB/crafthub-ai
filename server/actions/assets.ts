@@ -16,22 +16,26 @@ const createAssetSchema = z.object({
 export async function getAssets(search?: string, type?: string, projectId?: string) {
   const user = await requireUser();
 
-  const where: Record<string, unknown> = { ownerId: user.id };
-  if (search) {
-    where.name = { contains: search };
-  }
-  if (type && type !== 'ALL') {
-    where.type = type;
-  }
-  if (projectId) {
-    where.projectId = projectId;
-  }
+  try {
+    const where: Record<string, unknown> = { ownerId: user.id };
+    if (search) {
+      where.name = { contains: search };
+    }
+    if (type && type !== 'ALL') {
+      where.type = type;
+    }
+    if (projectId) {
+      where.projectId = projectId;
+    }
 
-  return db.asset.findMany({
-    where,
-    orderBy: { createdAt: 'desc' },
-    include: { project: { select: { id: true, name: true } } },
-  });
+    return db.asset.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      include: { project: { select: { id: true, name: true } } },
+    });
+  } catch {
+    return [];
+  }
 }
 
 export async function getAsset(assetId: string) {

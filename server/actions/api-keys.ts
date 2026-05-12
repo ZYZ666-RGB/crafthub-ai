@@ -14,19 +14,23 @@ const createApiKeySchema = z.object({
 export async function getApiKeys() {
   const user = await requireUser();
 
-  const keys = await db.apiKey.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: 'desc' },
-  });
+  try {
+    const keys = await db.apiKey.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: 'desc' },
+    });
 
-  // Never return the actual encrypted key to the client
-  return keys.map((key) => ({
-    id: key.id,
-    provider: key.provider,
-    maskedKey: maskApiKey(key.encryptedKey.split(':').pop() || '****'),
-    createdAt: key.createdAt,
-    updatedAt: key.updatedAt,
-  }));
+    // Never return the actual encrypted key to the client
+    return keys.map((key) => ({
+      id: key.id,
+      provider: key.provider,
+      maskedKey: maskApiKey(key.encryptedKey.split(':').pop() || '****'),
+      createdAt: key.createdAt,
+      updatedAt: key.updatedAt,
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export async function createApiKey(data: z.infer<typeof createApiKeySchema>) {

@@ -7,17 +7,51 @@ export async function getCurrentUser() {
   if (!session?.user?.id) {
     return null;
   }
-  return db.user.findUnique({
-    where: { id: session.user.id },
-  });
+  try {
+    return await db.user.findUnique({
+      where: { id: session.user.id },
+    });
+  } catch {
+    // Database not available, return minimal user from session
+    return {
+      id: session.user.id,
+      name: session.user.name || null,
+      email: session.user.email || '',
+      image: session.user.image || null,
+      role: (session.user.role as 'USER' | 'ADMIN') || 'USER',
+      password: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+  }
 }
 
 export async function requireUser() {
-  const user = await getCurrentUser();
-  if (!user) {
+  const session = await auth();
+  if (!session?.user) {
     redirect('/login');
   }
-  return user;
+
+  try {
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+    });
+    if (user) return user;
+  } catch {
+    // Database not available
+  }
+
+  // Return minimal user from session
+  return {
+    id: session.user.id || '',
+    name: session.user.name || null,
+    email: session.user.email || '',
+    image: session.user.image || null,
+    role: (session.user.role as 'USER' | 'ADMIN') || 'USER',
+    password: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
 }
 
 export async function requireAdmin() {

@@ -18,19 +18,23 @@ const createGenerationSchema = z.object({
 export async function getGenerations(status?: string) {
   const user = await requireUser();
 
-  const where: Record<string, unknown> = { ownerId: user.id };
-  if (status && status !== 'ALL') {
-    where.status = status;
-  }
+  try {
+    const where: Record<string, unknown> = { ownerId: user.id };
+    if (status && status !== 'ALL') {
+      where.status = status;
+    }
 
-  return db.generation.findMany({
-    where,
-    orderBy: { createdAt: 'desc' },
-    include: {
-      model: { select: { id: true, name: true, category: true } },
-      project: { select: { id: true, name: true } },
-    },
-  });
+    return db.generation.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        model: { select: { id: true, name: true, category: true } },
+        project: { select: { id: true, name: true } },
+      },
+    });
+  } catch {
+    return [];
+  }
 }
 
 export async function getGeneration(generationId: string) {

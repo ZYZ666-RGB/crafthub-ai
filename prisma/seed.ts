@@ -12,6 +12,7 @@ async function main() {
     create: {
       name: 'Admin User',
       email: 'admin@crafthub.ai',
+      password: '$2a$12$LQv3c1yqBo9SkvXS7QTJPOoGz3.Y1jLHiYPFKNOqGHMFWcpdK3Aai',
       role: Role.ADMIN,
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
     },
@@ -23,6 +24,7 @@ async function main() {
     create: {
       name: 'Demo User',
       email: 'user@crafthub.ai',
+      password: '$2a$12$LQv3c1yqBo9SkvXS7QTJPOoGz3.Y1jLHiYPFKNOqGHMFWcpdK3Aai',
       role: Role.USER,
       image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo',
     },
@@ -319,6 +321,7 @@ async function main() {
         modelId: models[0].id,
         ownerId: user.id,
         parameters: JSON.stringify({ aspectRatio: '9:16', steps: 40 }),
+        resultUrls: '[]',
       },
     }),
     prisma.generation.create({
@@ -329,6 +332,7 @@ async function main() {
         modelId: models[0].id,
         ownerId: admin.id,
         parameters: JSON.stringify({ aspectRatio: '16:9', steps: 50 }),
+        resultUrls: '[]',
       },
     }),
     prisma.generation.create({
@@ -352,6 +356,7 @@ async function main() {
         projectId: projects[3].id,
         ownerId: admin.id,
         parameters: JSON.stringify({ duration: 30, genre: 'ambient' }),
+        resultUrls: '[]',
         errorMessage: 'Mock error: Generation timed out',
       },
     }),
@@ -374,6 +379,7 @@ async function main() {
         modelId: models[0].id,
         ownerId: admin.id,
         parameters: JSON.stringify({ aspectRatio: '1:1', steps: 40 }),
+        resultUrls: '[]',
       },
     }),
     prisma.generation.create({
@@ -406,18 +412,18 @@ async function main() {
 
   // Create assets
   await Promise.all([
-    prisma.asset.create({ data: { name: 'Logo v1', url: 'https://placehold.co/512x512/6d28d9/ffffff?text=Logo+v1', type: AssetType.IMAGE, projectId: projects[0].id, ownerId: user.id, tags: JSON.stringify(['logo', 'brand']) } }),
-    prisma.asset.create({ data: { name: 'Logo v2', url: 'https://placehold.co/512x512/4f46e5/ffffff?text=Logo+v2', type: AssetType.IMAGE, projectId: projects[0].id, ownerId: user.id, tags: JSON.stringify(['logo', 'brand', 'final']) } }),
-    prisma.asset.create({ data: { name: 'Product Shot 1', url: 'https://placehold.co/1024x1024/0ea5e9/ffffff?text=Product+1', type: AssetType.IMAGE, projectId: projects[1].id, ownerId: user.id, tags: JSON.stringify(['product', 'ecommerce']) } }),
-    prisma.asset.create({ data: { name: 'Product Shot 2', url: 'https://placehold.co/1024x1024/10b981/ffffff?text=Product+2', type: AssetType.IMAGE, projectId: projects[1].id, ownerId: user.id, tags: JSON.stringify(['product', 'ecommerce']) } }),
-    prisma.asset.create({ data: { name: 'Promo Video', url: 'https://placehold.co/1920x1080/6d28d9/ffffff?text=Promo', type: AssetType.VIDEO, projectId: projects[2].id, ownerId: admin.id, tags: JSON.stringify(['video', 'promo']) } }),
-    prisma.asset.create({ data: { name: 'Storyboard Frame 1', url: 'https://placehold.co/1920x1080/f59e0b/ffffff?text=Frame+1', type: AssetType.IMAGE, projectId: projects[2].id, ownerId: admin.id, tags: JSON.stringify(['storyboard', 'frame']) } }),
-    prisma.asset.create({ data: { name: 'Background Music', url: 'https://placehold.co/400x400/ec4899/ffffff?text=Music', type: AssetType.AUDIO, projectId: projects[3].id, ownerId: admin.id, tags: JSON.stringify(['audio', 'ambient']) } }),
-    prisma.asset.create({ data: { name: 'City Neon', url: 'https://placehold.co/1024x576/4f46e5/ffffff?text=City+Neon', type: AssetType.IMAGE, ownerId: user.id, tags: JSON.stringify(['city', 'neon', 'retro']) } }),
-    prisma.asset.create({ data: { name: 'Abstract Flow', url: 'https://placehold.co/512x512/ec4899/ffffff?text=Flow', type: AssetType.IMAGE, projectId: projects[0].id, ownerId: user.id, tags: JSON.stringify(['abstract', 'colorful']) } }),
-    prisma.asset.create({ data: { name: 'Pixel Room', url: 'https://placehold.co/512x512/f59e0b/ffffff?text=Pixel', type: AssetType.IMAGE, projectId: projects[0].id, ownerId: user.id, tags: JSON.stringify(['pixel-art', 'isometric']) } }),
-    prisma.asset.create({ data: { name: 'Design Brief', url: 'https://placehold.co/400x400/64748b/ffffff?text=Doc', type: AssetType.DOCUMENT, projectId: projects[0].id, ownerId: user.id, tags: JSON.stringify(['document', 'brief']) } }),
-    prisma.asset.create({ data: { name: 'Sound Effect Pack', url: 'https://placehold.co/400x400/10b981/ffffff?text=SFX', type: AssetType.AUDIO, projectId: projects[3].id, ownerId: admin.id, tags: JSON.stringify(['sfx', 'audio', 'pack']) } }),
+    prisma.asset.create({ data: { name: 'Logo v1', url: 'https://placehold.co/512x512/6d28d9/ffffff?text=Logo+v1', type: AssetType.IMAGE, projectId: projects[0].id, ownerId: user.id, tags: JSON.stringify(['logo', 'brand']), metadata: '{}' } }),
+    prisma.asset.create({ data: { name: 'Logo v2', url: 'https://placehold.co/512x512/4f46e5/ffffff?text=Logo+v2', type: AssetType.IMAGE, projectId: projects[0].id, ownerId: user.id, tags: JSON.stringify(['logo', 'brand', 'final']), metadata: '{}' } }),
+    prisma.asset.create({ data: { name: 'Product Shot 1', url: 'https://placehold.co/1024x1024/0ea5e9/ffffff?text=Product+1', type: AssetType.IMAGE, projectId: projects[1].id, ownerId: user.id, tags: JSON.stringify(['product', 'ecommerce']), metadata: '{}' } }),
+    prisma.asset.create({ data: { name: 'Product Shot 2', url: 'https://placehold.co/1024x1024/10b981/ffffff?text=Product+2', type: AssetType.IMAGE, projectId: projects[1].id, ownerId: user.id, tags: JSON.stringify(['product', 'ecommerce']), metadata: '{}' } }),
+    prisma.asset.create({ data: { name: 'Promo Video', url: 'https://placehold.co/1920x1080/6d28d9/ffffff?text=Promo', type: AssetType.VIDEO, projectId: projects[2].id, ownerId: admin.id, tags: JSON.stringify(['video', 'promo']), metadata: '{}' } }),
+    prisma.asset.create({ data: { name: 'Storyboard Frame 1', url: 'https://placehold.co/1920x1080/f59e0b/ffffff?text=Frame+1', type: AssetType.IMAGE, projectId: projects[2].id, ownerId: admin.id, tags: JSON.stringify(['storyboard', 'frame']), metadata: '{}' } }),
+    prisma.asset.create({ data: { name: 'Background Music', url: 'https://placehold.co/400x400/ec4899/ffffff?text=Music', type: AssetType.AUDIO, projectId: projects[3].id, ownerId: admin.id, tags: JSON.stringify(['audio', 'ambient']), metadata: '{}' } }),
+    prisma.asset.create({ data: { name: 'City Neon', url: 'https://placehold.co/1024x576/4f46e5/ffffff?text=City+Neon', type: AssetType.IMAGE, ownerId: user.id, tags: JSON.stringify(['city', 'neon', 'retro']), metadata: '{}' } }),
+    prisma.asset.create({ data: { name: 'Abstract Flow', url: 'https://placehold.co/512x512/ec4899/ffffff?text=Flow', type: AssetType.IMAGE, projectId: projects[0].id, ownerId: user.id, tags: JSON.stringify(['abstract', 'colorful']), metadata: '{}' } }),
+    prisma.asset.create({ data: { name: 'Pixel Room', url: 'https://placehold.co/512x512/f59e0b/ffffff?text=Pixel', type: AssetType.IMAGE, projectId: projects[0].id, ownerId: user.id, tags: JSON.stringify(['pixel-art', 'isometric']), metadata: '{}' } }),
+    prisma.asset.create({ data: { name: 'Design Brief', url: 'https://placehold.co/400x400/64748b/ffffff?text=Doc', type: AssetType.DOCUMENT, projectId: projects[0].id, ownerId: user.id, tags: JSON.stringify(['document', 'brief']), metadata: '{}' } }),
+    prisma.asset.create({ data: { name: 'Sound Effect Pack', url: 'https://placehold.co/400x400/10b981/ffffff?text=SFX', type: AssetType.AUDIO, projectId: projects[3].id, ownerId: admin.id, tags: JSON.stringify(['sfx', 'audio', 'pack']), metadata: '{}' } }),
   ]);
 
   console.log('✅ Assets created');

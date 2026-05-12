@@ -16,23 +16,27 @@ const updateProjectSchema = createProjectSchema.partial();
 export async function getProjects(search?: string, visibility?: string) {
   const user = await requireUser();
 
-  const where: Record<string, unknown> = { ownerId: user.id };
-  if (search) {
-    where.name = { contains: search };
-  }
-  if (visibility && visibility !== 'ALL') {
-    where.visibility = visibility;
-  }
+  try {
+    const where: Record<string, unknown> = { ownerId: user.id };
+    if (search) {
+      where.name = { contains: search };
+    }
+    if (visibility && visibility !== 'ALL') {
+      where.visibility = visibility;
+    }
 
-  return db.project.findMany({
-    where,
-    orderBy: { createdAt: 'desc' },
-    include: {
-      _count: {
-        select: { prompts: true, generations: true, assets: true },
+    return db.project.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        _count: {
+          select: { prompts: true, generations: true, assets: true },
+        },
       },
-    },
-  });
+    });
+  } catch {
+    return [];
+  }
 }
 
 export async function getProject(projectId: string) {

@@ -114,8 +114,11 @@ export default function LoginPage() {
         </p>
 
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400">
-          <strong>Dev Mode:</strong> Use <code>user@crafthub.ai</code> / <code>password123</code> for testing.
-          Credentials login is for local development only.
+          <p className="font-bold">Dev Mode:</p>
+          <p className="mt-1">Use the following credentials for testing:</p>
+          <p className="mt-1 font-mono">Email: user@crafthub.ai</p>
+          <p className="font-mono">Password: password123</p>
+          <p className="mt-1 text-[10px] opacity-70">Credentials login is for local development only.</p>
         </div>
       </div>
     </div>
