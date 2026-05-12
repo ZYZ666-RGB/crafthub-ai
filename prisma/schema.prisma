@@ -90,7 +90,7 @@ model Prompt {
   title          String
   content        String   @db.Text
   negativePrompt String?  @db.Text
-  tags           String   @default("[]") @db.Text
+  tags           String   @db.Text
   ownerId        String
   projectId      String?
   createdAt      DateTime @default(now())
@@ -113,7 +113,7 @@ model AiModel {
   category    ModelCategory
   coverImage  String?
   isFeatured  Boolean       @default(false)
-  parameters  String        @default("{}") @db.Text
+  parameters  String        @db.Text
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
@@ -131,8 +131,8 @@ model Generation {
   modelId        String?
   projectId      String?
   ownerId        String
-  parameters     String           @default("{}") @db.Text
-  resultUrls     String           @default("[]") @db.Text
+  parameters     String           @db.Text
+  resultUrls     String           @db.Text
   errorMessage   String?          @db.Text
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
@@ -155,8 +155,8 @@ model Asset {
   type      AssetType
   projectId String?
   ownerId   String
-  tags      String    @default("[]") @db.Text
-  metadata  String    @default("{}") @db.Text
+  tags      String    @db.Text
+  metadata  String    @db.Text
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 

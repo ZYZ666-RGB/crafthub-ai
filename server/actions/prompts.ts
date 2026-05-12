@@ -18,31 +18,35 @@ const updatePromptSchema = createPromptSchema.partial();
 export async function getPrompts(search?: string, tag?: string, projectId?: string) {
   const user = await requireUser();
 
-  const where: Record<string, unknown> = { ownerId: user.id };
-  if (search) {
-    where.OR = [
-      { title: { contains: search } },
-      { content: { contains: search } },
-    ];
-  }
-  if (projectId) {
-    where.projectId = projectId;
-  }
+  try {
+    const where: Record<string, unknown> = { ownerId: user.id };
+    if (search) {
+      where.OR = [
+        { title: { contains: search } },
+        { content: { contains: search } },
+      ];
+    }
+    if (projectId) {
+      where.projectId = projectId;
+    }
 
-  const prompts = await db.prompt.findMany({
-    where,
-    orderBy: { createdAt: 'desc' },
-    include: { project: { select: { id: true, name: true } } },
-  });
-
-  if (tag) {
-    return prompts.filter((p) => {
-      const tags = JSON.parse(p.tags) as string[];
-      return tags.includes(tag);
+    const prompts = await db.prompt.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      include: { project: { select: { id: true, name: true } } },
     });
-  }
 
-  return prompts;
+    if (tag) {
+      return prompts.filter((p) => {
+        const tags = JSON.parse(p.tags) as string[];
+        return tags.includes(tag);
+      });
+    }
+
+    return prompts;
+  } catch {
+    return [];
+  }
 }
 
 export async function getPrompt(promptId: string) {

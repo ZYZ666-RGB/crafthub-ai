@@ -6,24 +6,28 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 export async function getModels(search?: string, category?: string, provider?: string) {
-  const where: Record<string, unknown> = {};
-  if (search) {
-    where.OR = [
-      { name: { contains: search } },
-      { description: { contains: search } },
-    ];
-  }
-  if (category && category !== 'ALL') {
-    where.category = category;
-  }
-  if (provider && provider !== 'ALL') {
-    where.provider = provider;
-  }
+  try {
+    const where: Record<string, unknown> = {};
+    if (search) {
+      where.OR = [
+        { name: { contains: search } },
+        { description: { contains: search } },
+      ];
+    }
+    if (category && category !== 'ALL') {
+      where.category = category;
+    }
+    if (provider && provider !== 'ALL') {
+      where.provider = provider;
+    }
 
-  return db.aiModel.findMany({
-    where,
-    orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
-  });
+    return db.aiModel.findMany({
+      where,
+      orderBy: [{ isFeatured: 'desc' }, { createdAt: 'desc' }],
+    });
+  } catch {
+    return [];
+  }
 }
 
 export async function getModelBySlug(slug: string) {
