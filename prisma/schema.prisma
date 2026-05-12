@@ -1,0 +1,198 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Visibility {
+  PRIVATE
+  TEAM
+  PUBLIC
+}
+
+enum GenerationStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELED
+}
+
+enum ModelCategory {
+  IMAGE
+  VIDEO
+  AUDIO
+  TEXT
+}
+
+enum AssetType {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+}
+
+enum FavoriteTargetType {
+  MODEL
+  ASSET
+  PROMPT
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  image     String?
+  password  String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects    Project[]
+  prompts     Prompt[]
+  generations Generation[]
+  assets      Asset[]
+  favorites   Favorite[]
+  apiKeys     ApiKey[]
+
+  @@map("users")
+}
+
+model Project {
+  id          String     @id @default(cuid())
+  name        String
+  description String?    @db.Text
+  coverImage  String?
+  visibility  Visibility @default(PRIVATE)
+  ownerId     String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  prompts     Prompt[]
+  generations Generation[]
+  assets      Asset[]
+
+  @@index([ownerId])
+  @@map("projects")
+}
+
+model Prompt {
+  id             String   @id @default(cuid())
+  title          String
+  content        String   @db.Text
+  negativePrompt String?  @db.Text
+  tags           String   @default("[]") @db.Text
+  ownerId        String
+  projectId      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  owner   User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([ownerId])
+  @@index([projectId])
+  @@map("prompts")
+}
+
+model AiModel {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String?       @db.Text
+  provider    String
+  category    ModelCategory
+  coverImage  String?
+  isFeatured  Boolean       @default(false)
+  parameters  String        @default("{}") @db.Text
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  generations Generation[]
+
+  @@map("ai_models")
+}
+
+model Generation {
+  id             String           @id @default(cuid())
+  prompt         String           @db.Text
+  negativePrompt String?          @db.Text
+  status         GenerationStatus @default(QUEUED)
+  provider       String?
+  modelId        String?
+  projectId      String?
+  ownerId        String
+  parameters     String           @default("{}") @db.Text
+  resultUrls     String           @default("[]") @db.Text
+  errorMessage   String?          @db.Text
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  model   AiModel? @relation(fields: [modelId], references: [id], onDelete: SetNull)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  owner   User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+  @@index([modelId])
+  @@index([projectId])
+  @@index([status])
+  @@map("generations")
+}
+
+model Asset {
+  id        String    @id @default(cuid())
+  name      String
+  url       String
+  type      AssetType
+  projectId String?
+  ownerId   String
+  tags      String    @default("[]") @db.Text
+  metadata  String    @default("{}") @db.Text
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  owner   User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+  @@index([projectId])
+  @@index([type])
+  @@map("assets")
+}
+
+model Favorite {
+  id         String             @id @default(cuid())
+  userId     String
+  targetType FavoriteTargetType
+  targetId   String
+  createdAt  DateTime           @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetType, targetId])
+  @@index([userId])
+  @@map("favorites")
+}
+
+model ApiKey {
+  id           String   @id @default(cuid())
+  userId       String
+  provider     String
+  encryptedKey String   @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("api_keys")
+}
